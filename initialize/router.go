@@ -12,6 +12,9 @@ func RegisterRouter() *gin.Engine {
 		readAccessToken(),
 	)
 
+	// 初始化基础前置参数
+	handler.InitBasicConfigForChatGPT()
+
 	router := gin.Default()
 	router.Use(middlewares.Cors)
 
@@ -34,5 +37,6 @@ func RegisterRouter() *gin.Engine {
 	authGroup := router.Group("").Use(middlewares.Authorization)
 	authGroup.POST("/v1/chat/completions", handler.nightmare)
 	authGroup.GET("/v1/models", handler.engines)
+	authGroup.POST("/backend-api/conversation", handler.chatgptConversation)
 	return router
 }

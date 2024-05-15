@@ -33,9 +33,6 @@ func (a *AccessToken) GetSecret() *Secret {
 		return &Secret{}
 	}
 
-	a.lock.Lock()
-	defer a.lock.Unlock()
-
 	if len(a.tokens) == 0 {
 		return &Secret{}
 	}
@@ -57,4 +54,8 @@ func (a *AccessToken) UpdateSecret(tokens []*Secret) {
 
 func (a *AccessToken) GenerateTempToken(token string) *Secret {
 	return &Secret{Token: token, PUID: "", IsFree: false}
+}
+
+func (a *AccessToken) GenerateDeviceId(token string) *Secret {
+	return &Secret{Token: token, PUID: "", IsFree: true}
 }
