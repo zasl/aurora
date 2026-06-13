@@ -1,8 +1,11 @@
 package util
 
 import (
+	"log/slog"
 	"math/rand"
 	"time"
+
+	"github.com/pkoukk/tiktoken-go"
 )
 
 func RandomLanguage() string {
@@ -13,4 +16,25 @@ func RandomLanguage() string {
 	// 随机选择一个语言
 	randomIndex := rand.Intn(len(languages))
 	return languages[randomIndex]
+}
+
+func RandomHexadecimalString() string {
+	rand.Seed(time.Now().UnixNano())
+	const charset = "0123456789abcdef"
+	const length = 16 // The length of the string you want to generate
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[rand.Intn(len(charset))]
+	}
+	return string(b)
+}
+func CountToken(input string) int {
+	encoding := "gpt-3.5-turbo"
+	tkm, err := tiktoken.EncodingForModel(encoding)
+	if err != nil {
+		slog.Warn("tiktoken.EncodingForModel error", "error", err)
+		return 0
+	}
+	token := tkm.Encode(input, nil, nil)
+	return len(token)
 }

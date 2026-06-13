@@ -6,9 +6,17 @@ tools/authenticator/access_tokens.txt
 *.txt
 aurora
 chatgpttoapi
+chatgpt2api
 tools/authenticator/.proxies.txt.swp
 .env
 *.har
 .idea/
 /logs/
 /target/
+/bin/
+.claude
+.gocache
+.atomcode
+CLAUDE.md
+MIGRATION_PLAN.md
+_scratch/

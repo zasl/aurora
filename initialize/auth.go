@@ -1,15 +1,28 @@
 package initialize
 
 import (
+	"aurora/internal/tokens"
 	"bufio"
 	"fmt"
 	"os"
 	"strconv"
-
-	"aurora/internal/tokens"
+	"strings"
 
 	"github.com/google/uuid"
 )
+
+func parseAccessTokenLine(line string) *tokens.Secret {
+	line = strings.TrimSpace(line)
+	if line == "" || strings.HasPrefix(line, "#") {
+		return nil
+	}
+	parts := strings.SplitN(line, ":", 2)
+	token := strings.TrimSpace(parts[0])
+	if token == "" {
+		return nil
+	}
+	return tokens.NewSecret(token)
+}
 
 func readAccessToken() *tokens.AccessToken {
 	var Secrets []*tokens.Secret
@@ -20,13 +33,9 @@ func readAccessToken() *tokens.AccessToken {
 		defer file.Close()
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
-			// Split by :
-			token := scanner.Text()
-			if len(token) == 0 {
-				continue
+			if secret := parseAccessTokenLine(scanner.Text()); secret != nil {
+				Secrets = append(Secrets, secret)
 			}
-			// Append to accounts
-			Secrets = append(Secrets, tokens.NewSecret(token))
 		}
 	}
 
@@ -47,7 +56,7 @@ func readAccessToken() *tokens.AccessToken {
 		}
 	}
 
-	if os.Getenv("FREE_ACCOUNTS") == "" || os.Getenv("FREE_ACCOUNTS") == "true" {
+	if os.Getenv("FREE_ACCOUNTS") == "true" {
 		freeAccountsNumStr := os.Getenv("FREE_ACCOUNTS_NUM")
 		numAccounts := 1024
 		if freeAccountsNumStr != "" {
